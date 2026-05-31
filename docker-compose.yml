@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  php:
+    image: php:8.2-apache
+    container_name: urgence360_php
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+
+  db:
+    image: mysql:8.0
+    container_name: urgence360_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: urgence360
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: urgence360_pma
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db

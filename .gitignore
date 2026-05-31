@@ -1,0 +1,18 @@
+# Symfony
+urgence360-api/vendor/
+urgence360-api/var/
+
+# React
+urgence360-front/node_modules/
+urgence360-front/dist/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env.local
+.env.*.local
+
+# Logs
+*.log
