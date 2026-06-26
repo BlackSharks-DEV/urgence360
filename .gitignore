@@ -6,6 +6,10 @@ urgence360-api/var/
 urgence360-front/node_modules/
 urgence360-front/dist/
 
+# Racine
+/vendor/
+/node_modules/
+
 # IDE
 .vscode/
 .idea/
