@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EtablissementController extends AbstractController
 {
@@ -56,6 +57,7 @@ class EtablissementController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/api/etablissements', methods: ['POST'])]
     public function create(
         Request $request,
@@ -102,6 +104,7 @@ class EtablissementController extends AbstractController
     }
 
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/api/etablissements/{id}', methods: ['DELETE'])]
     public function delete(
         int $id,
@@ -124,7 +127,8 @@ class EtablissementController extends AbstractController
             'message' => 'Établissement supprimé'
         ]);
     }
-
+    
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/api/etablissements/{id}', methods: ['PUT'])]
     public function update(
         int $id,

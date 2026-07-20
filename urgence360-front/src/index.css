@@ -49,10 +49,8 @@
     filter: invert(1) brightness(2);
   }
 }
-
-body {
-  margin: 0;
-}
+html, 
+body,
 
 #root {
   width: 1126px;
@@ -64,6 +62,12 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  height:100%;
+}
+
+body {
+    background: #f4f7fb;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 h1,

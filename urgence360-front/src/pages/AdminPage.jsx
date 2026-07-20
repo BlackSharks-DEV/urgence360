@@ -1,35 +1,59 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function AdminPage() {
+    const navigate = useNavigate();
 
     const [etablissements, setEtablissements] = useState([]);
-    const [nom, setNom] = useState('');
-    const [ville, setVille] = useState('');
-    const [adresse, setAdresse] = useState('');
-    const [latitude, setLatitude] = useState('');
-    const [longitude, setLongitude] = useState('');
-    const [niveauOccupation, setNiveauOccupation] = useState('faible');
+
+    const [nom, setNom] = useState("");
+    const [ville, setVille] = useState("");
+    const [adresse, setAdresse] = useState("");
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
+    const [niveauOccupation, setNiveauOccupation] = useState("faible");
+
     const [editId, setEditId] = useState(null);
 
+    const estConnecte = localStorage.getItem("connecte");
+
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/etablissements')
-            .then(response => response.json())
-            .then(data => {
-                setEtablissements(data);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }, []);
+        if (!estConnecte) {
+            navigate("/login");
+            return;
+        }
+
+        chargerEtablissements();
+    }, [navigate, estConnecte]);
+
+    const chargerEtablissements = async () => {
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/etablissements"
+        );
+
+        const data = await response.json();
+
+        setEtablissements(data);
+    };
+
+    const viderFormulaire = () => {
+        setNom("");
+        setVille("");
+        setAdresse("");
+        setLatitude("");
+        setLongitude("");
+        setNiveauOccupation("faible");
+        setEditId(null);
+    };
 
     const ajouterEtablissement = async () => {
 
         const response = await fetch(
-            'http://127.0.0.1:8000/api/etablissements',
+            "http://127.0.0.1:8000/api/etablissements",
             {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     nom,
@@ -37,54 +61,15 @@ function AdminPage() {
                     adresse,
                     latitude: parseFloat(latitude),
                     longitude: parseFloat(longitude),
-                    niveauOccupation
-                })
+                    niveauOccupation,
+                }),
             }
         );
 
         if (response.ok) {
-
-            const nouvelleListe = await fetch(
-                'http://127.0.0.1:8000/api/etablissements'
-            );
-
-            const data = await nouvelleListe.json();
-
-            setEtablissements(data);
+            await chargerEtablissements();
+            viderFormulaire();
         }
-    };
-
-    const supprimerEtablissement = async (id) => {
-
-        const response = await fetch(
-            `http://127.0.0.1:8000/api/etablissements/${id}`,
-            {
-                method: 'DELETE'
-            }
-        );
-
-        if (response.ok) {
-
-            setEtablissements(
-                etablissements.filter(
-                    e => e.id !== id
-                )
-            );
-        }
-    };
-
-    const chargerModification = (etablissement) => {
-
-        setEditId(etablissement.id);
-
-        setNom(etablissement.nom);
-        setVille(etablissement.ville);
-        setAdresse(etablissement.adresse);
-        setLatitude(etablissement.latitude);
-        setLongitude(etablissement.longitude);
-        setNiveauOccupation(
-            etablissement.niveauOccupation
-        );
     };
 
     const modifierEtablissement = async () => {
@@ -92,9 +77,9 @@ function AdminPage() {
         const response = await fetch(
             `http://127.0.0.1:8000/api/etablissements/${editId}`,
             {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     nom,
@@ -102,162 +87,298 @@ function AdminPage() {
                     adresse,
                     latitude: parseFloat(latitude),
                     longitude: parseFloat(longitude),
-                    niveauOccupation
-                })
+                    niveauOccupation,
+                }),
             }
         );
 
         if (response.ok) {
-
-            const nouvelleListe = await fetch(
-                'http://127.0.0.1:8000/api/etablissements'
-            );
-
-            const data = await nouvelleListe.json();
-
-            setEtablissements(data);
-
-            setEditId(null);
-
-            setNom('');
-            setVille('');
-            setAdresse('');
-            setLatitude('');
-            setLongitude('');
-            setNiveauOccupation('faible');
+            await chargerEtablissements();
+            viderFormulaire();
         }
     };
 
-    return (
-        <div style={{ padding: '20px' }}>
+    const supprimerEtablissement = async (id) => {
 
-            <h1>
-                Administration des établissements
-            </h1>
+        if (!window.confirm("Supprimer cet établissement ?")) return;
 
-
-            <h2>Ajouter un établissement</h2>
-
-            <input
-                type="text"
-                placeholder="Nom"
-                value={nom}
-                onChange={(e) => setNom(e.target.value)}
-            />
-
-            <br /><br />
-
-            <input
-                type="text"
-                placeholder="Ville"
-                value={ville}
-                onChange={(e) => setVille(e.target.value)}
-            />
-
-            <br /><br />
-
-            <input
-                type="text"
-                placeholder="Adresse"
-                value={adresse}
-                onChange={(e) => setAdresse(e.target.value)}
-            />
-
-            <br /><br />
-
-            <input
-                type="number"
-                placeholder="Latitude"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-            />
-
-            <br /><br />
-
-            <input
-                type="number"
-                placeholder="Longitude"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-            />
-
-            <br /><br />
-
-            <select
-                value={niveauOccupation}
-                onChange={(e) => setNiveauOccupation(e.target.value)}
-            >
-                <option value="faible">Faible</option>
-                <option value="moyen">Moyen</option>
-                <option value="saturation">Saturation</option>
-            </select>
-
-            <br /><br />
-
+        const response = await fetch(
+            `http://127.0.0.1:8000/api/etablissements/${id}`,
             {
-                editId ? (
-                    <button onClick={modifierEtablissement}>
-                        Modifier
-                    </button>
-                ) : (
-                    <button onClick={ajouterEtablissement}>
-                        Ajouter
-                    </button>
-                )
+                method: "DELETE",
             }
+        );
 
-        <hr />
+        if (response.ok) {
+            chargerEtablissements();
+        }
+    };
 
-            <table
-                border="1"
-                cellPadding="10"
-                style={{
-                    width: '100%',
-                    borderCollapse: 'collapse'
-                }}
+    const chargerModification = (e) => {
+
+        setEditId(e.id);
+
+        setNom(e.nom);
+        setVille(e.ville);
+        setAdresse(e.adresse);
+        setLatitude(e.latitude);
+        setLongitude(e.longitude);
+        setNiveauOccupation(e.niveauOccupation);
+    };
+
+    const deconnexion = () => {
+
+        localStorage.removeItem("connecte");
+        localStorage.removeItem("email");
+
+        navigate("/login");
+    };
+
+    return (
+    <div className="container-fluid py-4">
+
+        <div className="d-flex justify-content-between align-items-center mb-4">
+            <img
+                src="/Urgence360.png"
+                alt="Logo"
+                width="60"
+                className="me-3"
+            />
+            <div>
+                <h2 className="fw-bold mb-0">
+                    Administration
+                </h2>
+
+                <small className="text-muted">
+                    Gestion des établissements
+                </small>
+            </div>
+
+            <button
+                className="btn btn-danger"
+                onClick={deconnexion}
             >
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nom</th>
-                        <th>Ville</th>
-                        <th>Occupation</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {etablissements.map((etablissement) => (
-                        <tr key={etablissement.id}>
-                            <td>{etablissement.id}</td>
-                            <td>{etablissement.nom}</td>
-                            <td>{etablissement.ville}</td>
-                            <td>{etablissement.niveauOccupation}</td>
-                            <td>
-                                <button
-                                    onClick={() =>
-                                        chargerModification(etablissement)
-                                    }
-                                >
-                                    Modifier
-                                </button>
-
-                                {' '}
-
-                                <button
-                                    onClick={() =>
-                                        supprimerEtablissement(etablissement.id)
-                                    }
-                                >
-                                    Supprimer
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                Déconnexion
+            </button>
 
         </div>
+
+        <div className="card shadow-sm mb-4">
+
+            <div className="card-header bg-primary text-white">
+
+                <h5 className="mb-0">
+                    {editId
+                        ? "Modifier un établissement"
+                        : "Ajouter un établissement"}
+                </h5>
+
+            </div>
+
+            <div className="card-body">
+
+                <div className="row g-3">
+
+                    <div className="col-md-6">
+
+                        <input
+                            className="form-control"
+                            placeholder="Nom"
+                            value={nom}
+                            onChange={(e)=>setNom(e.target.value)}
+                        />
+
+                    </div>
+
+                    <div className="col-md-6">
+
+                        <input
+                            className="form-control"
+                            placeholder="Ville"
+                            value={ville}
+                            onChange={(e)=>setVille(e.target.value)}
+                        />
+
+                    </div>
+
+                    <div className="col-12">
+
+                        <input
+                            className="form-control"
+                            placeholder="Adresse"
+                            value={adresse}
+                            onChange={(e)=>setAdresse(e.target.value)}
+                        />
+
+                    </div>
+
+                    <div className="col-md-4">
+
+                        <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Latitude"
+                            value={latitude}
+                            onChange={(e)=>setLatitude(e.target.value)}
+                        />
+
+                    </div>
+
+                    <div className="col-md-4">
+
+                        <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Longitude"
+                            value={longitude}
+                            onChange={(e)=>setLongitude(e.target.value)}
+                        />
+
+                    </div>
+
+                    <div className="col-md-4">
+
+                        <select
+                            className="form-select"
+                            value={niveauOccupation}
+                            onChange={(e)=>setNiveauOccupation(e.target.value)}
+                        >
+                            <option value="faible">Faible</option>
+                            <option value="moyen">Moyen</option>
+                            <option value="saturation">Saturation</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div className="mt-4">
+
+                    {editId ? (
+
+                        <button
+                            className="btn btn-warning"
+                            onClick={modifierEtablissement}
+                        >
+                            Modifier
+                        </button>
+
+                    ) : (
+
+                        <button
+                            className="btn btn-success"
+                            onClick={ajouterEtablissement}
+                        >
+                            Ajouter
+                        </button>
+
+                    )}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div className="card shadow-sm">
+
+            <div className="card-header">
+
+                <h5 className="mb-0">
+                    Liste des établissements
+                </h5>
+
+            </div>
+
+            <div className="table-responsive">
+
+                <table className="table table-hover align-middle mb-0">
+
+                    <thead className="table-dark">
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Ville</th>
+                            <th>Occupation</th>
+                            <th className="text-center">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {etablissements.map((etablissement)=>{
+
+                            let couleur="success";
+
+                            if(etablissement.niveauOccupation==="moyen")
+                                couleur="warning";
+
+                            if(etablissement.niveauOccupation==="saturation")
+                                couleur="danger";
+
+                            return(
+
+                            <tr key={etablissement.id}>
+
+                                <td>{etablissement.id}</td>
+
+                                <td>{etablissement.nom}</td>
+
+                                <td>{etablissement.ville}</td>
+
+                                <td>
+
+                                    <span className={`badge bg-${couleur}`}>
+
+                                        {etablissement.niveauOccupation}
+
+                                    </span>
+
+                                </td>
+
+                                <td className="text-center">
+
+                                    <button
+                                        className="btn btn-warning btn-sm me-2"
+                                        onClick={() =>
+                                            chargerModification(etablissement)
+                                        }
+                                    >
+                                        Modifier
+                                    </button>
+
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() =>
+                                            supprimerEtablissement(etablissement.id)
+                                        }
+                                    >
+                                        Supprimer
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                            );
+
+                        })}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
     );
 }
 
