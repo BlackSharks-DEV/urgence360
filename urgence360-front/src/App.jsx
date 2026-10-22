@@ -7,7 +7,8 @@ import LoginPage from './pages/LoginPage';
 
 function Home() {
 
-    const [ville, setVille] = useState("Montpellier");
+    // Commence sans filtre pour afficher toute la France, puis conserve la ville saisie.
+    const [ville, setVille] = useState("");
 
     return (
         <div className="d-flex flex-column vh-100">
@@ -72,6 +73,7 @@ function Home() {
 
             </div>
 
+            {/* Transmet la ville saisie à la carte pour filtrer ses marqueurs. */}
             <div className="flex-grow-1 overflow-hidden">
               <MapView ville={ville} />
             </div>
@@ -119,6 +121,7 @@ function App() {
 
         <Routes>
 
+        {/* Associe chaque URL de l'application à la page à afficher. */}
             <Route
                 path="/"
                 element={<Home />}

@@ -1,71 +1,86 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 function LoginPage() {
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [erreur, setErreur] = useState("");
+    // Suit la requête afin d'empêcher les envois répétés et d'indiquer sa progression.
+    const [chargement, setChargement] = useState(false);
 
     const navigate = useNavigate();
 
+    // Connexion à l'API Symfony
     const connexion = async () => {
-
+        // Réinitialise l'erreur précédente et active l'état de chargement.
         setErreur("");
+        setChargement(true);
 
-        const response = await fetch(
-            "http://127.0.0.1:8000/api/login",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email,
-                    password
-                })
+        try {
+            // Envoie les identifiants avec le cookie de session géré par Symfony.
+            const response = await fetch(
+                "http://localhost:8000/api/login",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            // Affiche une erreur si la requête échoue ou si les identifiants sont refusés.
+            if (!response.ok || !data.success) {
+                setErreur("Email ou mot de passe incorrect");
+                return;
             }
-        );
 
-        const data = await response.json();
+            // L'accès à l'administration nécessite explicitement le rôle administrateur.
+            if (!data.roles?.includes("ROLE_ADMIN")) {
+                setErreur(
+                    "Ce compte ne possède pas les droits administrateur."
+                );
+                return;
+            }
 
-        console.log("Réponse API :", data);
-
-        if (data.success) {
-
+            // Indicateur utilisé par la navigation React.
+            // La véritable authentification est gérée par Symfony.
             localStorage.setItem("connecte", "true");
 
             navigate("/admin");
 
-        } else {
-
-            setErreur("Email ou mot de passe incorrect");
-
+        } catch (error) {
+            // Informe l'utilisateur si le serveur est inaccessible ou renvoie une erreur réseau.
+            console.error("Erreur de connexion :", error);
+            setErreur("Impossible de contacter le serveur Symfony.");
+        } finally {
+            // Réactive le formulaire que la requête ait réussi ou échoué.
+            setChargement(false);
         }
-
     };
 
     return (
-
-        <div
-            className="container-fluid bg-light min-vh-100 d-flex align-items-center justify-content-center"
-        >
-
+        <div className="container-fluid bg-light min-vh-100 d-flex align-items-center justify-content-center">
             <div
                 className="card shadow-lg border-0"
                 style={{ maxWidth: "430px", width: "100%" }}
             >
-
                 <div className="card-body p-5">
-
                     <div className="text-center mb-4">
                         <img
-                        src="/Urgence360.png"
-                        alt="Logo"
-                        width="100"
-                        className="mb-3"
+                            src="/Urgence360.png"
+                            alt="Logo Urgence360"
+                            width="100"
+                            className="mb-3"
                         />
-                        
+
                         <h2 className="fw-bold text-primary mb-2">
                             Urgence360
                         </h2>
@@ -73,11 +88,9 @@ function LoginPage() {
                         <p className="text-muted">
                             Connexion administrateur
                         </p>
-
                     </div>
 
                     <div className="mb-3">
-
                         <label className="form-label">
                             Adresse email
                         </label>
@@ -89,11 +102,9 @@ function LoginPage() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-
                     </div>
 
                     <div className="mb-4">
-
                         <label className="form-label">
                             Mot de passe
                         </label>
@@ -105,14 +116,18 @@ function LoginPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-
                     </div>
 
+                    {/* Bloque les nouveaux envois et adapte le libellé pendant la requête. */}
                     <button
+                        type="button"
                         className="btn btn-primary btn-lg w-100 mb-3"
                         onClick={connexion}
+                        disabled={chargement}
                     >
-                        Se connecter
+                        {chargement
+                            ? "Connexion en cours..."
+                            : "Se connecter"}
                     </button>
 
                     <Link
@@ -123,21 +138,13 @@ function LoginPage() {
                     </Link>
 
                     {erreur && (
-
                         <div className="alert alert-danger mt-4 mb-0">
-
                             {erreur}
-
                         </div>
-
                     )}
-
                 </div>
-
             </div>
-
         </div>
-
     );
 }
 

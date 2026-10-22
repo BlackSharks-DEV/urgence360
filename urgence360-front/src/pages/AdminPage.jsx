@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function AdminPage() {
+    // Permet de rediriger l'utilisateur après vérification ou déconnexion.
     const navigate = useNavigate();
 
+    // Conserve la liste récupérée depuis l'API et les valeurs du formulaire.
     const [etablissements, setEtablissements] = useState([]);
 
+    // Centralise la racine des endpoints utilisés par la gestion des établissements.
+    const API_URL = "http://localhost:8000/api";
     const [nom, setNom] = useState("");
     const [ville, setVille] = useState("");
     const [adresse, setAdresse] = useState("");
@@ -15,8 +19,10 @@ function AdminPage() {
 
     const [editId, setEditId] = useState(null);
 
+    // Lit l'indicateur local utilisé par l'interface pour protéger cette page.
     const estConnecte = localStorage.getItem("connecte");
 
+    // Vérifie l'accès à la page et charge les établissements au premier affichage.
     useEffect(() => {
         if (!estConnecte) {
             navigate("/login");
@@ -26,9 +32,13 @@ function AdminPage() {
         chargerEtablissements();
     }, [navigate, estConnecte]);
 
+    // Récupère la liste via la session Symfony et la stocke dans l'état React.
     const chargerEtablissements = async () => {
         const response = await fetch(
-            "http://127.0.0.1:8000/api/etablissements"
+            `${API_URL}/etablissements`,
+            {
+                credentials: "include"
+            }
         );
 
         const data = await response.json();
@@ -36,6 +46,7 @@ function AdminPage() {
         setEtablissements(data);
     };
 
+    // Réinitialise les champs après une création ou une modification.
     const viderFormulaire = () => {
         setNom("");
         setVille("");
@@ -46,12 +57,14 @@ function AdminPage() {
         setEditId(null);
     };
 
+    // Envoie les valeurs du formulaire pour créer un établissement.
     const ajouterEtablissement = async () => {
 
         const response = await fetch(
-            "http://127.0.0.1:8000/api/etablissements",
+            `${API_URL}/etablissements`,
             {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -72,12 +85,14 @@ function AdminPage() {
         }
     };
 
+    // Envoie les valeurs modifiées pour mettre à jour l'établissement sélectionné.
     const modifierEtablissement = async () => {
 
         const response = await fetch(
-            `http://127.0.0.1:8000/api/etablissements/${editId}`,
+            `${API_URL}/etablissements/${editId}`,
             {
                 method: "PUT",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -98,14 +113,16 @@ function AdminPage() {
         }
     };
 
+    // Demande confirmation avant de supprimer l'établissement indiqué.
     const supprimerEtablissement = async (id) => {
 
         if (!window.confirm("Supprimer cet établissement ?")) return;
 
         const response = await fetch(
-            `http://127.0.0.1:8000/api/etablissements/${id}`,
+            `${API_URL}/etablissements/${id}`,
             {
                 method: "DELETE",
+                credentials: "include",
             }
         );
 
@@ -114,6 +131,7 @@ function AdminPage() {
         }
     };
 
+    // Préremplit le formulaire avec les données de la ligne à modifier.
     const chargerModification = (e) => {
 
         setEditId(e.id);
@@ -126,6 +144,7 @@ function AdminPage() {
         setNiveauOccupation(e.niveauOccupation);
     };
 
+    // Efface les informations de connexion locales et revient à l'écran de login.
     const deconnexion = () => {
 
         localStorage.removeItem("connecte");
@@ -134,6 +153,7 @@ function AdminPage() {
         navigate("/login");
     };
 
+    // Affiche le formulaire de gestion et le tableau des établissements.
     return (
     <div className="container-fluid py-4">
 
@@ -163,6 +183,7 @@ function AdminPage() {
 
         </div>
 
+        {/* Le formulaire sert à créer une entrée ou à modifier celle sélectionnée. */}
         <div className="card shadow-sm mb-4">
 
             <div className="card-header bg-primary text-white">
@@ -280,6 +301,7 @@ function AdminPage() {
 
         </div>
 
+        {/* Le tableau présente les entrées et leurs actions disponibles. */}
         <div className="card shadow-sm">
 
             <div className="card-header">
@@ -312,6 +334,7 @@ function AdminPage() {
 
                     <tbody>
 
+                        {/* Choisit la couleur du badge selon le niveau d'occupation. */}
                         {etablissements.map((etablissement)=>{
 
                             let couleur="success";

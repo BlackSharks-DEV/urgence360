@@ -5,15 +5,18 @@ namespace App\Entity;
 use App\Repository\EtablissementRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+// Modèle Doctrine des établissements affichés sur la carte.
 #[ORM\Entity(repositoryClass: EtablissementRepository::class)]
 class Etablissement
 {
+    // Identifiant généré à l'insertion en base.
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    // Nom, ville et adresse décrivent l'établissement.
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
@@ -23,14 +26,17 @@ class Etablissement
     private ?string $adresse = null;
 
     #[ORM\Column]
+    // Coordonnées utilisées pour positionner le marqueur sur la carte.
     private ?float $latitude = null;
 
     #[ORM\Column]
     private ?float $longitude = null;
 
     #[ORM\Column(length: 255)]
+    // Niveau utilisé pour informer les visiteurs et colorer le marqueur.
     private ?string $niveauOccupation = null;
 
+    // Retourne l'identifiant de l'entité.
     public function getId(): ?int
     {
         return $this->id;

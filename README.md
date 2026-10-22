@@ -122,7 +122,15 @@ npm install
 
 ---
 
-## 5. Lancer le frontend
+## 5. Lancer l'api
+
+```bash
+symfony server:start
+```
+
+---
+
+## 6. Lancer le frontend
 
 ```bash
 npm run dev

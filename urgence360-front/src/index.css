@@ -1,3 +1,4 @@
+/* Définit les couleurs, polices et réglages typographiques globaux. */
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -30,6 +31,7 @@
   }
 }
 
+/* Ajuste les variables de thème si le système préfère le mode sombre. */
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
@@ -49,6 +51,7 @@
     filter: invert(1) brightness(2);
   }
 }
+/* Dimensionne la racine de l'application et centre son contenu. */
 html, 
 body,
 
@@ -65,11 +68,13 @@ body,
   height:100%;
 }
 
+/* Applique le fond et la police de base au document. */
 body {
     background: #f4f7fb;
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Harmonise l'apparence des titres et des textes de code. */
 h1,
 h2 {
   font-family: var(--heading);

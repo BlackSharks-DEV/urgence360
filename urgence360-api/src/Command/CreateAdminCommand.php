@@ -16,6 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 )]
 class CreateAdminCommand extends Command
 {
+    // Injecte l'accès à la base de données et le service de hachage des mots de passe.
     public function __construct(
         private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher
@@ -29,6 +30,7 @@ class CreateAdminCommand extends Command
         OutputInterface $output
     ): int
     {
+        // Crée le compte avec un rôle administrateur.
         $user = new User();
 
         $user->setEmail('admin@urgence360.fr');
@@ -37,6 +39,7 @@ class CreateAdminCommand extends Command
             'ROLE_ADMIN'
         ]);
 
+        // Enregistre uniquement le mot de passe haché, jamais sa valeur en clair.
         $user->setPassword(
             $this->passwordHasher->hashPassword(
                 $user,
@@ -44,6 +47,7 @@ class CreateAdminCommand extends Command
             )
         );
 
+        // Persiste le compte puis confirme la réussite dans la console.
         $this->em->persist($user);
         $this->em->flush();
 

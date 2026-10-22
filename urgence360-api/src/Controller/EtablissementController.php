@@ -13,11 +13,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class EtablissementController extends AbstractController
 {
+    // Renvoie la liste des établissements sous une forme JSON stable.
     #[Route('/api/etablissements', name: 'api_etablissements', methods: ['GET'])]
     public function index(EtablissementRepository $repository): JsonResponse
     {
         $etablissements = $repository->findAll();
 
+        // Transforme les entités Doctrine en tableaux adaptés à la réponse API.
         $data = [];
 
         foreach ($etablissements as $etablissement) {
@@ -35,6 +37,7 @@ class EtablissementController extends AbstractController
         return $this->json($data);
     }
 
+    // Renvoie un établissement précis ou une réponse 404 s'il n'existe pas.
     #[Route('/api/etablissements/{id}', name: 'api_etablissement_show', methods: ['GET'])]
     public function show(int $id, EtablissementRepository $repository): JsonResponse
     {
@@ -57,6 +60,7 @@ class EtablissementController extends AbstractController
         ]);
     }
 
+    // Réserve la création aux administrateurs.
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/api/etablissements', methods: ['POST'])]
     public function create(
@@ -64,6 +68,7 @@ class EtablissementController extends AbstractController
         EntityManagerInterface $em
     ): JsonResponse
     {
+        // Décode les données envoyées par le client.
         $data = json_decode(
             $request->getContent(),
             true
@@ -95,6 +100,7 @@ class EtablissementController extends AbstractController
             $data['niveauOccupation']
         );
 
+        // Enregistre la nouvelle entité et renvoie le statut HTTP de création.
         $em->persist($etablissement);
         $em->flush();
 
@@ -104,6 +110,7 @@ class EtablissementController extends AbstractController
     }
 
 
+    // Réserve la suppression aux administrateurs.
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/api/etablissements/{id}', methods: ['DELETE'])]
     public function delete(
@@ -112,6 +119,7 @@ class EtablissementController extends AbstractController
         EntityManagerInterface $em
         ): JsonResponse
     {
+        // Recherche la ligne ciblée avant d'essayer de la supprimer.
         $etablissement = $repository->find($id);
 
         if (!$etablissement) {
@@ -120,6 +128,7 @@ class EtablissementController extends AbstractController
             ], 404);
         }
 
+        // Supprime l'entité trouvée puis valide la transaction Doctrine.
         $em->remove($etablissement);
         $em->flush();
 
@@ -128,6 +137,7 @@ class EtablissementController extends AbstractController
         ]);
     }
     
+    // Réserve la modification aux administrateurs.
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/api/etablissements/{id}', methods: ['PUT'])]
     public function update(
@@ -137,6 +147,7 @@ class EtablissementController extends AbstractController
         EntityManagerInterface $em
     ): JsonResponse
     {
+        // Charge l'entité existante afin de pouvoir modifier ses champs.
         $etablissement = $repository->find($id);
 
         if (!$etablissement) {
@@ -145,6 +156,7 @@ class EtablissementController extends AbstractController
             ], 404);
         }
 
+        // Décode les nouvelles valeurs fournies dans le corps de la requête.
         $data = json_decode(
             $request->getContent(),
             true
@@ -159,6 +171,7 @@ class EtablissementController extends AbstractController
             $data['niveauOccupation']
         );
 
+        // Enregistre les changements puis confirme la modification au client.
         $em->flush();
 
         return $this->json([

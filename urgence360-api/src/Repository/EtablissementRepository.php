@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EtablissementRepository extends ServiceEntityRepository
 {
+    // Configure le dépôt Doctrine pour l'entité Etablissement.
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Etablissement::class);

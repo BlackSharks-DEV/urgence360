@@ -1,3 +1,4 @@
+/* Style du compteur et états interactifs associés. */
 .counter {
   font-size: 16px;
   padding: 5px 10px;
@@ -17,6 +18,7 @@
   }
 }
 
+/* Positionne les éléments décoratifs de l'illustration d'accueil. */
 .hero {
   position: relative;
 
@@ -56,6 +58,7 @@
   }
 }
 
+/* Centre le contenu principal et l'adapte aux écrans plus étroits. */
 #center {
   display: flex;
   flex-direction: column;
@@ -70,6 +73,7 @@
   }
 }
 
+/* Organise les sections d'information et leurs liens. */
 #next-steps {
   display: flex;
   border-top: 1px solid var(--border);
@@ -95,6 +99,7 @@
   }
 }
 
+/* Sépare visuellement le bloc de documentation. */
 #docs {
   border-right: 1px solid var(--border);
 
@@ -153,6 +158,7 @@
   }
 }
 
+/* Réserve l'espace de séparation en bas de la page. */
 #spacer {
   height: 88px;
   border-top: 1px solid var(--border);
@@ -161,6 +167,7 @@
   }
 }
 
+/* Ajoute les repères décoratifs aux extrémités de la ligne. */
 .ticks {
   position: relative;
   width: 100%;

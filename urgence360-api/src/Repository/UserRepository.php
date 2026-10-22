@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
+    // Configure le dépôt Doctrine pour l'entité User.
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
@@ -22,12 +23,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
+    // Met à jour l'empreinte lorsqu'un mécanisme Symfony demande sa mise à niveau.
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
+        // Persiste la nouvelle empreinte après vérification du type de l'utilisateur.
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();

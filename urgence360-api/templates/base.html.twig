@@ -1,16 +1,21 @@
 <!DOCTYPE html>
+{# Document HTML de base dont les blocs sont complétés par les vues enfants. #}
 <html>
     <head>
         <meta charset="UTF-8">
+        {# Permet aux pages enfants de définir leur propre titre. #}
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {# Emplacement réservé aux feuilles de style propres aux pages. #}
         {% block stylesheets %}
         {% endblock %}
 
+        {# Charge le JavaScript de l'application via l'import map Symfony. #}
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
 
+        {# Active le rechargement à chaud uniquement si le serveur le demande. #}
         {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
         {% if frankenphpHotReload %}
         <meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
@@ -19,6 +24,7 @@
         {% endif %}
     </head>
     <body>
+        {# Le contenu principal est fourni par chaque template enfant. #}
         {% block body %}{% endblock %}
     </body>
 </html>
