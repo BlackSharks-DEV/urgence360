@@ -1,0 +1,47 @@
+
+name: urgence360-test
+
+services:
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: urgence360
+      MYSQL_USER: urgence360
+      MYSQL_PASSWORD: urgence360
+    volumes:
+      - db_test_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./urgence360-api
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      APP_ENV: prod
+      DATABASE_URL: "mysql://urgence360:urgence360@database:3306/urgence360?serverVersion=8.0"
+    ports:
+      - "8001:80"
+
+  
+  front:
+    build:
+      context: ./urgence360-front
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: "http://localhost:8000/api"
+    ports:
+      - "5175:5173"
+
+
+volumes:
+  db_test_data:

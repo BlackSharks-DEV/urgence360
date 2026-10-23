@@ -1,3 +1,4 @@
+.git
 # Logs
 logs
 *.log
@@ -11,6 +12,9 @@ node_modules
 dist
 dist-ssr
 *.local
+.env.local
+.env.*.local
+npm-debug.log*
 
 # Editor directories and files
 .vscode/*

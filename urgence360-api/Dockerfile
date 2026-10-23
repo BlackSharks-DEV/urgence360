@@ -1,5 +1,7 @@
+
 FROM php:8.2-apache
 
+# Installation des dépendances système et extensions PHP
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -7,19 +9,38 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libicu-dev \
     libonig-dev \
-    libpq-dev \
-    && docker-php-ext-install pdo pdo_mysql intl zip
+    && docker-php-ext-install pdo_mysql intl zip \
+    && rm -rf /var/lib/apt/lists/*
 
+# Activation du module Apache rewrite
 RUN a2enmod rewrite
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Configuration Apache pour Symfony
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+RUN sed -ri \
+    -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
+    /etc/apache2/sites-available/*.conf \
+    /etc/apache2/apache2.conf \
+    /etc/apache2/conf-available/*.conf
+
+# Installation de Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copie des fichiers du projet
 COPY . .
 
-RUN composer install --no-interaction --optimize-autoloader
+# Installation des dépendances Symfony
+RUN composer install \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-scripts
 
-RUN chown -R www-data:www-data /var/www/html
+# Permissions pour Symfony
+RUN mkdir -p var/cache var/log var/sessions \
+    && chown -R www-data:www-data var
 
 EXPOSE 80

@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -20,8 +22,7 @@ function LoginPage() {
         try {
             // Envoie les identifiants avec le cookie de session géré par Symfony.
             const response = await fetch(
-                "http://localhost:8000/api/login",
-                {
+                `${API_URL}/login`,{
                     method: "POST",
                     credentials: "include",
                     headers: {

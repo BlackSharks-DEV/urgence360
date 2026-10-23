@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { useMap } from 'react-leaflet';
 
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 function RecenterMap({ position }) {
     // Récupère l'instance Leaflet utilisée pour déplacer la carte.
@@ -28,7 +28,7 @@ function MapView({ ville }) {
 
     // Charge une seule fois les données nécessaires aux marqueurs de la carte.
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/etablissements')
+        fetch(`${API_URL}/etablissements`)
             .then(response => response.json())
             .then(data => {
                 setEtablissements(data);

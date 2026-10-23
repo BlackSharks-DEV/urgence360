@@ -1,395 +1,117 @@
-# 🚑 Urgence360
+# Urgence360
 
-## Présentation
+Application web permettant de consulter les établissements disposant d'un service d'urgences et de visualiser leur niveau d'occupation sur une carte interactive.
 
-Urgence360 est une application web permettant de visualiser en temps réel le niveau d'occupation des services d'urgence d'un territoire.
+## Technologies utilisées
 
-L'application est composée de deux parties :
+- **Frontend :** React, Vite, React Leaflet
+- **Backend :** Symfony 7.4, PHP 8.2
+- **Base de données :** MySQL 8
+- **Cartographie :** Leaflet et OpenStreetMap
+- **Environnement :** Docker et Docker Compose
 
-- une interface publique permettant de consulter les établissements sur une carte interactive ;
-- une interface d'administration sécurisée permettant de gérer les établissements (CRUD).
+## Prérequis
 
-Le projet est développé dans le cadre du Bachelor Développeur Web.
+- Docker Desktop installé et démarré
+- Git (pour cloner le projet)
+- Une connexion Internet pour télécharger les images Docker et les dépendances
 
----
+Aucune installation locale de PHP, Composer, Node.js ou MySQL n'est nécessaire.
 
-# Fonctionnalités
+## Installation
 
-## Interface publique
+### 1. Récupérer le projet
 
-- Affichage des établissements sur une carte Leaflet
-- Recherche par ville
-- Marqueurs colorés selon le niveau d'occupation
-- Popup avec les informations de l'établissement
-- Interface responsive (ordinateur, tablette et mobile)
-
-## Interface administrateur
-
-- Authentification
-- Consultation des établissements
-- Ajout d'un établissement
-- Modification d'un établissement
-- Suppression d'un établissement
-- Déconnexion
-
----
-
-# Architecture du projet
-
-```
-Urgence360
-│
-├── urgence360-api
-│   ├── Symfony 7
-│   ├── Doctrine ORM
-│   ├── API REST
-│   └── MySQL
-│
-├── urgence360-front
-│   ├── React
-│   ├── React Router
-│   ├── Bootstrap
-│   └── React Leaflet
-│
-└── docker-compose.yml
-```
-
----
-
-# Technologies utilisées
-
-## Backend
-
-- Symfony 7
-- PHP 8.2
-- Doctrine ORM
-- MySQL
-- Composer
-
-## Frontend
-
-- React
-- React Router
-- Bootstrap 5
-- Leaflet
-- React Leaflet
-- Vite
-
-## Déploiement
-
-- Docker
-- Docker Compose
-
----
-
-# Installation
-
-## 1. Cloner le dépôt
+Cloner le dépôt GitHub :
 
 ```bash
-git clone https://github.com/BlackSharks-DEV/urgence360.git
-
-cd urgence360
+git clone URL_DU_DEPOT
+cd Urgence360
 ```
 
----
+Ou copier directement le dossier du projet sur l'ordinateur.
 
-## 2. Lancer les conteneurs
+### 2. Démarrer l'application
+
+À la racine du projet :
 
 ```bash
-docker compose up --build
-```
-
----
-
-## 3. Installer les dépendances du backend
-
-```bash
-cd urgence360-api
-
-composer install
-```
-
----
-
-## 4. Installer les dépendances du frontend
-
-```bash
-cd ../urgence360-front
-
-npm install
-```
-
----
-
-## 5. Lancer l'api
-
-```bash
-symfony server:start
-```
-
----
-
-## 6. Lancer le frontend
-
-```bash
-npm run dev
-```
-
----
-
-# Variables d'environnement
-
-Le backend utilise un fichier :
-
-```
-.env.local
-```
-
-contenant notamment :
-
-```
-DATABASE_URL="mysql://root:root@127.0.0.1:3306/urgence360"
-```
-
-En développement, il est également possible d'utiliser une base MySQL locale.
-
----
-
-# Base de données
-
-Créer la base :
-
-```bash
-php bin/console doctrine:database:create
-```
-
-Créer les tables :
-
-```bash
-php bin/console doctrine:migrations:migrate
-```
-
----
-
-# Compte administrateur
-
-Un compte administrateur est créé dans la base.
-
-Exemple :
-
-```
-Email :
-
-admin@urgence360.fr
-
-Mot de passe :
-
-admin123
-```
-
----
-
-# Utilisation
-
-## Partie publique
-
-Ouvrir :
-
-```
-http://localhost:5173
-```
-
-L'utilisateur peut :
-
-- rechercher une ville ;
-- consulter les établissements ;
-- visualiser le niveau d'occupation.
-
----
-
-## Partie administration
-
-Accéder à :
-
-```
-http://localhost:5173/login
-```
-
-Après authentification il est possible de :
-
-- ajouter un établissement ;
-- modifier un établissement ;
-- supprimer un établissement.
-
----
-
-# API REST
-
-## Liste des établissements
-
-```
-GET /api/etablissements
-```
-
----
-
-## Détail d'un établissement
-
-```
-GET /api/etablissements/{id}
-```
-
----
-
-## Ajouter
-
-```
-POST /api/etablissements
-```
-
----
-
-## Modifier
-
-```
-PUT /api/etablissements/{id}
-```
-
----
-
-## Supprimer
-
-```
-DELETE /api/etablissements/{id}
-```
-
----
-
-## Connexion
-
-```
-POST /api/login
-```
-
----
-
-# Déploiement
-
-Le projet peut être lancé via Docker Compose.
-
-Commande :
-
-```bash
-docker compose up --build -d
-```
-
-Les services démarrés sont :
-
-- Backend Symfony
-- Frontend React
-- Base MySQL
-
----
-
-# Environnements
-
-## Développement
-
-```
-APP_ENV=dev
-```
-
-Debug activé.
-
----
-
-## Test
-
-```
-APP_ENV=test
-```
-
----
-
-## Production
-
-```
-APP_ENV=prod
-```
-
-Debug désactivé.
-
----
-
-# Stratégie de mise en production
-
-Le projet est conteneurisé grâce à Docker.
-
-Une nouvelle version peut être déployée en reconstruisant les images Docker :
-
-```bash
-docker compose pull
-
 docker compose up -d --build
 ```
 
-Dans un contexte professionnel, une stratégie de type Blue/Green Deployment ou Rolling Update pourrait être utilisée afin de limiter les interruptions de service.
+Lors du premier lancement, Docker construit les images et initialise la base de données MySQL si son volume est vide.
 
-Pour ce projet pédagogique, un redémarrage contrôlé des conteneurs est suffisant.
+### 3. Accéder à l'application
 
----
+| Service | Adresse |
+|---|---|
+| Application React | http://localhost:5173 |
+| API Symfony | http://localhost:8000 |
+| Liste des établissements | http://localhost:8000/api/etablissements |
 
-# Sécurité
+### 4. Fonctionnalités
 
-Le projet implémente :
+**Partie publique**
+- Affichage des établissements d'urgences sur une carte interactive
+- Consultation des niveaux d'occupation
+- Recherche et filtrage par ville
+- Consultation des informations des établissements
 
-- authentification administrateur ;
-- mots de passe chiffrés ;
-- accès protégé aux fonctionnalités d'administration ;
-- validation des données côté serveur ;
-- architecture API REST.
+**Administration**
+- Connexion administrateur
+- Ajout d'établissements
+- Modification des établissements
+- Suppression des établissements
+- Gestion des niveaux d'occupation
 
----
+## Commandes utiles
 
-# Responsive Design
+Démarrer les conteneurs :
 
-L'application est compatible :
+```bash
+docker compose up -d
+```
 
-- ordinateur
-- tablette
-- smartphone
+Arrêter les conteneurs sans supprimer les données :
 
-Bootstrap est utilisé pour adapter automatiquement l'interface.
+```bash
+docker compose down
+```
 
----
+Consulter les journaux :
 
-# Perspectives d'amélioration
+```bash
+docker compose logs -f
+```
 
-Les évolutions envisageables sont :
+Reconstruire les images après une modification :
 
-- authentification JWT complète ;
-- gestion de plusieurs administrateurs ;
-- tableau de bord statistique ;
-- historique des modifications ;
-- notifications en temps réel ;
-- géolocalisation automatique de l'utilisateur ;
-- consommation d'API hospitalières en temps réel.
+```bash
+docker compose up -d --build
+```
 
----
+Afficher les conteneurs :
 
-# Auteur
+```bash
+docker compose ps
+```
 
-Projet réalisé par :
+**Attention :** éviter `docker compose down -v`, car cette commande supprime également les volumes de données.
 
-**Clément Delamare**
+## Base de données
 
-Bachelor Développeur Web
+La base MySQL est initialisée à partir des scripts présents dans `docker/mysql/init/` lors de la création d'un nouveau volume.
 
-2025-2026
+Les données sont conservées dans un volume Docker.
 
----
+Le fichier SQL d'initialisation doit être réservé à des données de démonstration, sans identifiants ni informations sensibles.
 
-# Licence
+## Sécurité
 
-Projet pédagogique réalisé dans le cadre du Bachelor Développeur Web.
+L'accès aux fonctionnalités d'administration est protégé par une authentification Symfony.
+
+Les paramètres de développement et les identifiants de démonstration ne doivent pas être réutilisés pour un déploiement public.
+
+## Auteur
+
+Projet réalisé dans le cadre d'une formation Bachelor Bac+3 en développement informatique.

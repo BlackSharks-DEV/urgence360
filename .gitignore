@@ -1,22 +1,22 @@
-# Symfony
-urgence360-api/vendor/
-urgence360-api/var/
 
-# React
-urgence360-front/node_modules/
-urgence360-front/dist/
+# Environnement local
+**/.env.local
+**/.env.*.local
 
-# Racine
-/vendor/
-/node_modules/
+# Dépendances
+**/node_modules/
+**/vendor/
 
-# IDE
-.vscode/
-.idea/
+# Fichiers générés
+**/dist/
+**/var/cache/
+**/var/log/
+**/var/sessions/
 
-# Environment
-.env.local
-.env.*.local
+# Sauvegardes de base de données
+urgence360_backup.sql
+*.sql.gz
 
-# Logs
-*.log
+# Fichiers système
+.DS_Store
+Thumbs.db
