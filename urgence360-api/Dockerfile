@@ -40,7 +40,8 @@ RUN composer install \
     --no-scripts
 
 # Permissions pour Symfony
-RUN mkdir -p var/cache var/log var/sessions \
-    && chown -R www-data:www-data var
+RUN mkdir -p /var/www/html/var/cache /var/www/html/var/log /var/www/html/var/sessions \
+    && chown -R www-data:www-data /var/www/html/var \
+    && chmod -R u+rwX,g+rwX /var/www/html/var
 
 EXPOSE 80
